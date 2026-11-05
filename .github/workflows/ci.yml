@@ -11,21 +11,37 @@ permissions:
   contents: read
 
 jobs:
-  check:
+  compatibility:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {php: '8.2', testbench: '^10.0', var_dumper: '^7.4'}
+          - {php: '8.3', testbench: '^10.0', var_dumper: '^7.4'}
+          - {php: '8.3', testbench: '^11.0', var_dumper: '^7.4'}
+          - {php: '8.4', testbench: '^10.0', var_dumper: '^7.4'}
+          - {php: '8.4', testbench: '^11.0', var_dumper: '~8.0.0'}
+          - {php: '8.5', testbench: '^10.0', var_dumper: '^7.4'}
+          - {php: '8.5', testbench: '^11.0', var_dumper: '^8.0'}
     env:
-      COMPOSER_ROOT_VERSION: 3.0.x-dev
+      COMPOSER_ROOT_VERSION: 3.1.x-dev
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
-          php-version: '8.5'
+          php-version: '${{ matrix.php }}'
           extensions: mbstring, dom, xml, xmlwriter, pdo_sqlite
           coverage: none
           tools: composer:v2
       - run: composer validate --strict
-      - run: composer update --prefer-dist --no-interaction
-      - run: composer check
+      - run: composer update --with 'orchestra/testbench:${{ matrix.testbench }}' --with 'symfony/var-dumper:${{ matrix.var_dumper }}' --prefer-dist --no-interaction
+      - run: composer test
+      - run: composer analyse
+      - run: composer audit --no-interaction
+      - run: composer show laravel/framework && composer show symfony/var-dumper
+      - if: matrix.php == '8.5' && matrix.testbench == '^11.0'
+        run: composer format:check && composer rector

@@ -1,6 +1,6 @@
 {
-    "name": "beyondcode/laravel-dump-server",
-    "description": "Laravel dump server maintained for PHP 8.5, Laravel 13 and Symfony VarDumper 8.1",
+    "name": "gracjankubicki/laravel-dump-server",
+    "description": "Laravel dump server for PHP 8.2+, Laravel 12/13 and Symfony VarDumper 7.4/8",
     "keywords": [
         "beyondcode",
         "laravel-dump-server"
@@ -16,20 +16,21 @@
         }
     ],
     "conflict": {
-        "spatie/laravel-ray": "*"
+        "spatie/laravel-ray": "*",
+        "beyondcode/laravel-dump-server": "*"
     },
     "require": {
-        "php": "^8.5",
-        "illuminate/console": "^13.30",
-        "illuminate/http": "^13.30",
-        "illuminate/support": "^13.30",
-        "symfony/var-dumper": "^8.1.10"
+        "php": "^8.2",
+        "illuminate/console": "^12.0 || ^13.0",
+        "illuminate/http": "^12.0 || ^13.0",
+        "illuminate/support": "^12.0 || ^13.0",
+        "symfony/var-dumper": "^7.4 || ^8.0"
     },
     "require-dev": {
         "larastan/larastan": "^3.14",
-        "laravel/pint": "^1.32.1",
-        "orchestra/testbench": "^11.0",
-        "phpunit/phpunit": "^13.4",
+        "laravel/pint": "^1.30.4",
+        "orchestra/testbench": "^10.0 || ^11.0",
+        "phpunit/phpunit": "^11.5 || ^12.5 || ^13.4",
         "rector/rector": "^2.8.4"
     },
     "autoload": {

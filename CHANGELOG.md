@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased: code standards
+## 3.1.0
+
+- Publish as `gracjankubicki/laravel-dump-server` for installation from Packagist without VCS configuration.
+- Support PHP 8.2–8.5, Laravel 12/13 and Symfony VarDumper 7.4/8, verified by a seven-case test matrix.
+- Conflict with the old package to prevent two packages providing the same namespace.
+- Keep the `BeyondCode\DumpServer` namespace, command, configuration, transport and fallback behavior.
+- Document migration, including preserving `dont-discover` settings when changing package names.
+
+### Code standards included in 3.1.0
 
 - Add native private property types and use match for output format selection.
 - Validate host and controller types with explicit errors for invalid input.
