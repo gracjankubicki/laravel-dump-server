@@ -1,49 +1,84 @@
-# Laravel Dump Server
+# Laravel dump server
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/beyondcode/laravel-dump-server.svg?style=flat-square)](https://packagist.org/packages/beyondcode/laravel-dump-server)
-[![Total Downloads](https://img.shields.io/packagist/dt/beyondcode/laravel-dump-server.svg?style=flat-square)](https://packagist.org/packages/beyondcode/laravel-dump-server)
+Maintained fork for PHP 8.5, Laravel 13 and Symfony VarDumper 8.1. Based on [Beyond Code](https://github.com/beyondcode/laravel-dump-server) and [Laravel Shift's Laravel 13 compatibility branch](https://github.com/laravel-shift/laravel-dump-server/tree/l13-compatibility).
 
-Bringing the [Symfony Var-Dump Server](https://symfony.com/doc/current/components/var_dumper.html#the-dump-server) to Laravel.
+The server collects `dump()` output over TCP. While the receiver runs, dumps appear in its terminal instead of the application's HTTP response. If the receiver is unavailable, dumps fall back to the application's normal CLI or HTML output. That fallback can change an API response, so keep the receiver running when debugging JSON endpoints.
 
-This package will give you a dump server, that collects all your `dump` call outputs, so that it does not interfere with HTTP / API responses.
+## Requirements
 
-## Installation
+| Dependency | Supported constraint |
+| --- | --- |
+| PHP | `^8.5` |
+| Illuminate Console, HTTP and Support | `^13.30` |
+| Symfony VarDumper | `^8.1.10` |
 
-You can install the package via composer:
+Version 3 drops older PHP, Laravel and Symfony versions. The package name, `BeyondCode\DumpServer` namespace, automatic provider discovery, `dump-server` command and `debug-server.host` configuration remain unchanged. This fork retains the existing conflict with `spatie/laravel-ray`.
 
-```bash
-composer require --dev beyondcode/laravel-dump-server
+## Install this fork
+
+This release is distributed through GitHub VCS, not Packagist. Add the repository to your application's `composer.json`:
+
+```json
+{
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/gracjankubicki/laravel-dump-server"
+    }
+  ]
+}
 ```
 
-## Documentation
+Then install the tagged fork as a development dependency:
 
-You can find the documentation on the [Beyond Code website](https://beyondco.de/docs/laravel-dump-server/installation).
+```bash
+composer require --dev 'beyondcode/laravel-dump-server:^3.0' --with-all-dependencies
+```
 
-## Looking for `dump` on steroids? Check out Laravel Herd!
-<img src="https://github.com/beyondcode/laravel-dump-server/assets/26432041/28a74ab1-35bd-42d1-bcfe-98e7f7101c1e" alt="Herd logo" style="width: 150px"/>
+If the application already has a repositories list, append this entry without replacing the other entries. Keep the package name `beyondcode/laravel-dump-server`; it identifies this fork through the VCS repository above.
 
+## Run the receiver
 
-Herd Pro gives you a powerful interface to help you watch and collect your debug information.
+```bash
+php artisan dump-server
+```
 
-All of your application's `dump()` and `dd()` calls will be beautifully formatted and can be filtered from Herd's separate Dump window.
+For HTML output:
 
-Just keep using `dump()` as usual – Herd will take care of the rest.
+```bash
+php artisan dump-server --format=html > dumps.html
+```
 
-[herd.laravel.com](https://herd.laravel.com)
+The default address is `tcp://127.0.0.1:9912`. Override it for both the application and the receiver with `DUMP_SERVER_HOST`. To publish the configuration:
 
-## Contributing
+```bash
+php artisan vendor:publish --provider='BeyondCode\DumpServer\DumpServerServiceProvider' --tag=config
+```
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+The resulting file is `config/debug-server.php`. Restart long-running application processes after changing configuration.
 
-### Security
+Use this package only in a trusted development environment. The TCP receiver has no authentication or encryption, and accepts serialized debug data. Keep it on loopback or an isolated development network. Dumps can contain application secrets. The provider registers its handler when loaded; it does not enforce `APP_DEBUG` or an environment check.
 
-If you discover any security related issues, please email marcel@beyondco.de instead of using the issue tracker.
+## Develop and verify
 
-## Credits
+The Docker wrapper runs PHP and Composer without a host PHP installation:
 
-- [Marcel Pociot](https://github.com/mpociot)
-- [All Contributors](../../contributors)
+```bash
+make build
+make install
+make check
+```
 
-## License
+`make check` runs PHPUnit, Larastan at level 8, and Composer audit. Integration tests start real loopback TCP and HTTP servers, verify CLI and HTML output, preserve a JSON response, and exercise fallback and command failures. Processes and sockets are closed by the tests.
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+CI checks current dependency resolution on PHP 8.5. The library does not commit `composer.lock`; consuming applications must commit their own lock file. Dependabot checks Composer constraints and GitHub Actions weekly. A passing audit means no advisories were reported for the resolved dependencies at that time.
+
+## Contribute and report vulnerabilities
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). For vulnerabilities in this fork, contact [gracjankubicki](https://github.com/gracjankubicki) privately through a contact method listed on the profile. Do not post sensitive reproduction data in a public issue or pull request.
+
+## Credits and license
+
+Original implementation by [Marcel Pociot](https://github.com/mpociot) and [contributors](https://github.com/beyondcode/laravel-dump-server/graphs/contributors). Laravel 13 compatibility work by Laravel Shift. This fork is maintained by [Gracjan Kubicki](https://github.com/gracjankubicki).
+
+Released under the [MIT license](LICENSE.md). The original copyright and license are preserved.

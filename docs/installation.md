@@ -2,29 +2,10 @@
 title: Installation
 order: 1
 ---
-# Laravel Dump Server
+# Install the maintained fork
 
-Bringing the Symfony Var-Dump Server to Laravel.
+See the [current installation guide](../README.md#install-this-fork) for the GitHub VCS repository and the version 3 requirement.
 
-This package will give you a dump server, that collects all your dump call outputs, so that it does not interfere with HTTP / API responses.
+This fork requires PHP 8.5, Laravel 13 and Symfony VarDumper 8.1. It keeps the original package name `beyondcode/laravel-dump-server`. Requiring that name without configuring this fork's VCS repository can install the upstream package instead.
 
-![Dump Server Demo](/img/example.gif)
-
-# Installation
-
-You can install the package via composer:
-
-```bash
-composer require --dev beyondcode/laravel-dump-server
-```
-
-The package will register itself automatically. 
-
-Optionally you can publish the package configuration using:
-
-```bash
-php artisan vendor:publish --provider="BeyondCode\DumpServer\DumpServerServiceProvider"
-```
-
-This will publish a file called `debug-server.php` in your `config` folder.
-In the config file, you can specify the dump server host that you want to listen on, in case you want to change the default value.
+The README also covers provider discovery, configuration, CLI and HTML output, local fallback, and network restrictions.

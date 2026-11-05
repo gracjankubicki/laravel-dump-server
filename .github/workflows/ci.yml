@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [master, modern-laravel13]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      COMPOSER_ROOT_VERSION: 3.0.x-dev
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.5'
+          extensions: mbstring, dom, xml, xmlwriter, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+      - run: composer validate --strict
+      - run: composer update --prefer-dist --no-interaction
+      - run: composer check

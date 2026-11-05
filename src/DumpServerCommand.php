@@ -55,7 +55,12 @@ class DumpServerCommand extends Command
      */
     public function handle()
     {
-        switch ($format = $this->option('format')) {
+        $format = $this->option('format');
+        if (!is_string($format)) {
+            throw new InvalidArgumentException('The output format must be a string.');
+        }
+
+        switch ($format) {
             case 'cli':
                 $descriptor = new CliDescriptor(new CliDumper);
                 break;

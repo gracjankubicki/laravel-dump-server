@@ -4,3 +4,7 @@ vendor
 coverage
 .idea
 .phpunit.result.cache
+.phpunit.cache
+.cache
+implementation-plans/
+storage/

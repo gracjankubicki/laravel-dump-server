@@ -1,11 +1,11 @@
 {
     "name": "beyondcode/laravel-dump-server",
-    "description": "Symfony Var-Dump Server for Laravel",
+    "description": "Laravel dump server maintained for PHP 8.5, Laravel 13 and Symfony VarDumper 8.1",
     "keywords": [
         "beyondcode",
         "laravel-dump-server"
     ],
-    "homepage": "https://github.com/beyondcode/laravel-dump-server",
+    "homepage": "https://github.com/gracjankubicki/laravel-dump-server",
     "license": "MIT",
     "authors": [
         {
@@ -19,15 +19,16 @@
         "spatie/laravel-ray": "*"
     },
     "require": {
-        "php": ">=7.2.5",
-        "illuminate/console": "5.6.*|5.7.*|5.8.*|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
-        "illuminate/http": "5.6.*|5.7.*|5.8.*|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
-        "illuminate/support": "5.6.*|5.7.*|5.8.*|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
-        "symfony/var-dumper": "^5.0|^6.0|^7.0"
+        "php": "^8.5",
+        "illuminate/console": "^13.30",
+        "illuminate/http": "^13.30",
+        "illuminate/support": "^13.30",
+        "symfony/var-dumper": "^8.1.10"
     },
     "require-dev": {
-        "larapack/dd": "^1.0",
-        "phpunit/phpunit": "^7.0|^9.3|^10.5"
+        "larastan/larastan": "^3.14",
+        "orchestra/testbench": "^11.0",
+        "phpunit/phpunit": "^13.4"
     },
     "autoload": {
         "psr-4": {
@@ -44,10 +45,17 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit",
+        "analyse": "vendor/bin/phpstan analyse --no-progress --memory-limit=1G",
+        "check": [
+            "@test",
+            "@analyse",
+            "@composer audit --no-interaction"
+        ],
         "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {}
     },
     "extra": {
         "laravel": {

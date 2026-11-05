@@ -38,7 +38,7 @@ class RequestContextProvider implements ContextProviderInterface
     /**
      * Get the context.
      *
-     * @return array|null
+     * @return array{uri: string, method: string, controller: \Symfony\Component\VarDumper\Cloner\Data, identifier: string}|null
      */
     public function getContext(): ?array
     {

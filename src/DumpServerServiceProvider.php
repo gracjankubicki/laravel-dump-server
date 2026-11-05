@@ -40,12 +40,12 @@ class DumpServerServiceProvider extends ServiceProvider
             'command.dumpserver',
         ]);
 
-        $host = $this->app['config']->get('debug-server.host');
+        $host = $this->app->make(\Illuminate\Contracts\Config\Repository::class)->get('debug-server.host');
 
         $this->app->when(DumpServer::class)->needs('$host')->give($host);
 
         $connection = new Connection($host, [
-            'request' => new RequestContextProvider($this->app['request']),
+            'request' => new RequestContextProvider($this->app->make(\Illuminate\Http\Request::class)),
             'source' => new SourceContextProvider('utf-8', base_path()),
         ]);
 
