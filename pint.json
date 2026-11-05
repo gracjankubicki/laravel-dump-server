@@ -1,0 +1,7 @@
+{
+    "preset": "laravel",
+    "exclude": [".cache", "storage"],
+    "rules": {
+        "ordered_class_elements": false
+    }
+}

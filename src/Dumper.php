@@ -9,31 +9,19 @@ use Symfony\Component\VarDumper\Server\Connection;
 
 class Dumper
 {
-    /**
-     * The connection.
-     *
-     * @var \Symfony\Component\VarDumper\Server\Connection|null
-     */
-    private $connection;
+    private ?Connection $connection = null;
 
-    /**
-     * Dumper constructor.
-     *
-     * @param  \Symfony\Component\VarDumper\Server\Connection|null  $connection
-     * @return void
-     */
     public function __construct(?Connection $connection = null)
     {
         $this->connection = $connection;
     }
 
     /**
-     * Dump a value with elegance.
+     * Send a cloned value to the server, or print it locally.
      *
-     * @param  mixed  $value
      * @return void
      */
-    public function dump($value)
+    public function dump(mixed $value)
     {
         if (class_exists(CliDumper::class)) {
             $data = $this->createVarCloner()->cloneVar($value);
@@ -47,11 +35,8 @@ class Dumper
         }
     }
 
-    /**
-     * @return VarCloner
-     */
     protected function createVarCloner(): VarCloner
     {
-        return new VarCloner();
+        return new VarCloner;
     }
 }

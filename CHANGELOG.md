@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased: code standards
+
+- Add native private property types and use match for output format selection.
+- Validate host and controller types with explicit errors for invalid input.
+- Preserve public method overrides and protected property compatibility.
+- Add targeted Rector and Pint checks, maximum-level Larastan, and regression tests for configuration, controllers and subclasses.
+
 ## 3.0.0
 
 - Require PHP 8.5, Laravel 13.30 or later in the Laravel 13 series, and Symfony VarDumper 8.1.10 or later in the Symfony 8 series.

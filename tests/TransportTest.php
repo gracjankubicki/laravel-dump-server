@@ -4,8 +4,8 @@ namespace BeyondCode\DumpServer\Tests;
 
 use BeyondCode\DumpServer\Tests\Support\ProcessTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Process\PhpProcess;
+use Symfony\Component\Process\Process;
 
 class TransportTest extends ProcessTestCase
 {
@@ -17,7 +17,7 @@ class TransportTest extends ProcessTestCase
     }
 
     #[DataProvider('formats')]
-    public function testRealServerReceivesCliDump(string $format): void
+    public function test_real_server_receives_cli_dump(string $format): void
     {
         $host = $this->unusedAddress();
         $server = $this->startProcess([PHP_BINARY, 'tests/Fixtures/server.php', 'dump-server', '--format='.$format], $host, 'Server listening');
@@ -32,7 +32,7 @@ class TransportTest extends ProcessTestCase
         }
     }
 
-    public function testHttpDumpDoesNotCorruptJsonAndIncludesRequestContext(): void
+    public function test_http_dump_does_not_corrupt_json_and_includes_request_context(): void
     {
         $host = $this->unusedAddress();
         $server = $this->startProcess([PHP_BINARY, 'tests/Fixtures/server.php', 'dump-server'], $host, 'Server listening');
@@ -44,7 +44,7 @@ class TransportTest extends ProcessTestCase
         self::assertStringContainsString('GET http://'.$http.'/json', $output);
     }
 
-    public function testHttpFallbackRemainsReadableWithoutServer(): void
+    public function test_http_fallback_remains_readable_without_server(): void
     {
         $host = $this->unusedAddress();
         $http = $this->unusedAddress();
@@ -56,7 +56,7 @@ class TransportTest extends ProcessTestCase
         self::assertStringContainsString('<script', $response);
     }
 
-    public function testUnsupportedFormatFailsBeforeStartingServer(): void
+    public function test_unsupported_format_fails_before_starting_server(): void
     {
         $host = $this->unusedAddress();
         $process = new Process([PHP_BINARY, 'tests/Fixtures/server.php', 'dump-server', '--format=csv'], dirname(__DIR__), ['DUMP_SERVER_HOST' => 'tcp://'.$host]);
@@ -68,7 +68,7 @@ class TransportTest extends ProcessTestCase
         self::assertStringNotContainsString('Server listening', $output);
     }
 
-    public function testOccupiedPortFailsWithoutClaimingToListen(): void
+    public function test_occupied_port_fails_without_claiming_to_listen(): void
     {
         $socket = stream_socket_server('tcp://127.0.0.1:0');
         self::assertNotFalse($socket);
@@ -84,5 +84,4 @@ class TransportTest extends ProcessTestCase
             fclose($socket);
         }
     }
-
 }

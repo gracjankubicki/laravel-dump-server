@@ -27,8 +27,10 @@
     },
     "require-dev": {
         "larastan/larastan": "^3.14",
+        "laravel/pint": "^1.32.1",
         "orchestra/testbench": "^11.0",
-        "phpunit/phpunit": "^13.4"
+        "phpunit/phpunit": "^13.4",
+        "rector/rector": "^2.8.4"
     },
     "autoload": {
         "psr-4": {
@@ -47,11 +49,16 @@
         "test": "vendor/bin/phpunit",
         "analyse": "vendor/bin/phpstan analyse --no-progress --memory-limit=1G",
         "check": [
+            "@format:check",
+            "@rector",
             "@test",
             "@analyse",
             "@composer audit --no-interaction"
         ],
-        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+        "format": "vendor/bin/pint",
+        "format:check": "vendor/bin/pint --test",
+        "rector": "vendor/bin/rector process --dry-run --no-progress-bar"
     },
     "config": {
         "sort-packages": true,

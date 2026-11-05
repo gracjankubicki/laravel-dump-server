@@ -69,7 +69,9 @@ make install
 make check
 ```
 
-`make check` runs PHPUnit, Larastan at level 8, and Composer audit. Integration tests start real loopback TCP and HTTP servers, verify CLI and HTML output, preserve a JSON response, and exercise fallback and command failures. Processes and sockets are closed by the tests.
+`make check` checks formatting with Pint and runs the selected Rector rules in dry-run mode, PHPUnit, Larastan at its maximum level, and Composer audit. Integration tests start real loopback TCP and HTTP servers, verify CLI and HTML output, preserve a JSON response, and exercise fallback and command failures. Processes and sockets are closed by the tests. Compatibility tests also protect existing untyped overrides in subclasses.
+
+Run `make format` to apply the Laravel Pint preset. `make rector` checks switch-to-match conversions in `src`. Constructor promotion is deliberately excluded: nullable properties must keep their declaration defaults for subclasses that do not call the parent constructor. Public return types remain unchanged so existing subclasses can keep their overrides.
 
 CI checks current dependency resolution on PHP 8.5. The library does not commit `composer.lock`; consuming applications must commit their own lock file. Dependabot checks Composer constraints and GitHub Actions weekly. A passing audit means no advisories were reported for the resolved dependencies at that time.
 

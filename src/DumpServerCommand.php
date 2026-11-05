@@ -4,13 +4,13 @@ namespace BeyondCode\DumpServer;
 
 use Illuminate\Console\Command;
 use InvalidArgumentException;
-use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\VarDumper\Cloner\Data;
+use Symfony\Component\VarDumper\Command\Descriptor\CliDescriptor;
+use Symfony\Component\VarDumper\Command\Descriptor\HtmlDescriptor;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Symfony\Component\VarDumper\Server\DumpServer;
-use Symfony\Component\VarDumper\Command\Descriptor\CliDescriptor;
-use Symfony\Component\VarDumper\Command\Descriptor\HtmlDescriptor;
 
 class DumpServerCommand extends Command
 {
@@ -31,14 +31,13 @@ class DumpServerCommand extends Command
     /**
      * The Dump server.
      *
-     * @var \Symfony\Component\VarDumper\Server\DumpServer
+     * @var DumpServer
      */
     protected $server;
 
     /**
      * DumpServerCommand constructor.
      *
-     * @param  \Symfony\Component\VarDumper\Server\DumpServer  $server
      * @return void
      */
     public function __construct(DumpServer $server)
@@ -56,20 +55,15 @@ class DumpServerCommand extends Command
     public function handle()
     {
         $format = $this->option('format');
-        if (!is_string($format)) {
+        if (! is_string($format)) {
             throw new InvalidArgumentException('The output format must be a string.');
         }
 
-        switch ($format) {
-            case 'cli':
-                $descriptor = new CliDescriptor(new CliDumper);
-                break;
-            case 'html':
-                $descriptor = new HtmlDescriptor(new HtmlDumper);
-                break;
-            default:
-                throw new InvalidArgumentException(sprintf('Unsupported format "%s".', $format));
-        }
+        $descriptor = match ($format) {
+            'cli' => new CliDescriptor(new CliDumper),
+            'html' => new HtmlDescriptor(new HtmlDumper),
+            default => throw new InvalidArgumentException(sprintf('Unsupported format "%s".', $format)),
+        };
 
         $io = new SymfonyStyle($this->input, $this->output);
 

@@ -2,11 +2,14 @@
 
 namespace BeyondCode\DumpServer;
 
+use Illuminate\Contracts\Config\Repository;
+use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
-use Symfony\Component\VarDumper\VarDumper;
+use InvalidArgumentException;
+use Symfony\Component\VarDumper\Dumper\ContextProvider\SourceContextProvider;
 use Symfony\Component\VarDumper\Server\Connection;
 use Symfony\Component\VarDumper\Server\DumpServer;
-use Symfony\Component\VarDumper\Dumper\ContextProvider\SourceContextProvider;
+use Symfony\Component\VarDumper\VarDumper;
 
 class DumpServerServiceProvider extends ServiceProvider
 {
@@ -40,12 +43,16 @@ class DumpServerServiceProvider extends ServiceProvider
             'command.dumpserver',
         ]);
 
-        $host = $this->app->make(\Illuminate\Contracts\Config\Repository::class)->get('debug-server.host');
+        $host = $this->app->make(Repository::class)->get('debug-server.host');
+
+        if (! is_string($host)) {
+            throw new InvalidArgumentException('The debug-server.host configuration must be a string.');
+        }
 
         $this->app->when(DumpServer::class)->needs('$host')->give($host);
 
         $connection = new Connection($host, [
-            'request' => new RequestContextProvider($this->app->make(\Illuminate\Http\Request::class)),
+            'request' => new RequestContextProvider($this->app->make(Request::class)),
             'source' => new SourceContextProvider('utf-8', base_path()),
         ]);
 

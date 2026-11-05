@@ -3,31 +3,17 @@
 namespace BeyondCode\DumpServer;
 
 use Illuminate\Http\Request;
+use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\ContextProvider\ContextProviderInterface;
+use UnexpectedValueException;
 
 class RequestContextProvider implements ContextProviderInterface
 {
-    /**
-     * The current request.
-     *
-     * @var \Illuminate\Http\Request|null
-     */
-    private $currentRequest;
+    private ?Request $currentRequest = null;
 
-    /**
-     * The variable cloner.
-     *
-     * @var \Symfony\Component\VarDumper\Cloner\VarCloner
-     */
-    private $cloner;
+    private VarCloner $cloner;
 
-    /**
-     * RequestContextProvider constructor.
-     *
-     * @param  \Illuminate\Http\Request|null  $currentRequest
-     * @return void
-     */
     public function __construct(?Request $currentRequest = null)
     {
         $this->currentRequest = $currentRequest;
@@ -38,7 +24,7 @@ class RequestContextProvider implements ContextProviderInterface
     /**
      * Get the context.
      *
-     * @return array{uri: string, method: string, controller: \Symfony\Component\VarDumper\Cloner\Data, identifier: string}|null
+     * @return array{uri: string, method: string, controller: Data, identifier: string}|null
      */
     public function getContext(): ?array
     {
@@ -54,6 +40,10 @@ class RequestContextProvider implements ContextProviderInterface
             if (! $controller && ! is_string($route->action['uses'])) {
                 $controller = $route->action['uses'];
             }
+        }
+
+        if ($controller && ! is_object($controller) && ! is_string($controller)) {
+            throw new UnexpectedValueException('The route controller must be an object or a class name.');
         }
 
         return [

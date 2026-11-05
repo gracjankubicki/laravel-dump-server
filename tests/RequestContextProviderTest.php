@@ -9,12 +9,12 @@ use PHPUnit\Framework\TestCase;
 
 class RequestContextProviderTest extends TestCase
 {
-    public function testNoRequestProducesNoContext(): void
+    public function test_no_request_produces_no_context(): void
     {
         self::assertNull((new RequestContextProvider)->getContext());
     }
 
-    public function testRequestWithoutRouteHasUriAndMethod(): void
+    public function test_request_without_route_has_uri_and_method(): void
     {
         $request = Request::create('https://example.test/debug?q=one', 'POST');
         $context = (new RequestContextProvider($request))->getContext();
@@ -24,7 +24,7 @@ class RequestContextProviderTest extends TestCase
         self::assertNull($context['controller']->getValue());
     }
 
-    public function testClosureRouteContextIsSerializable(): void
+    public function test_closure_route_context_is_serializable(): void
     {
         $request = Request::create('/closure');
         $route = new Route('GET', '/closure', static fn () => 'ok');
@@ -32,5 +32,25 @@ class RequestContextProviderTest extends TestCase
         $context = (new RequestContextProvider($request))->getContext();
         self::assertSame('Closure', $context['controller']->getValue());
         self::assertIsString(serialize($context));
+    }
+
+    public function test_controller_object_context_uses_class_basename(): void
+    {
+        $request = Request::create('/controller');
+        $route = new Route('GET', '/controller', ['uses' => 'ExampleController@index']);
+        $route->controller = new \stdClass;
+        $request->setRouteResolver(static fn () => $route);
+        $context = (new RequestContextProvider($request))->getContext();
+        self::assertSame('stdClass', $context['controller']->getValue());
+    }
+
+    public function test_invalid_controller_has_clear_error(): void
+    {
+        $request = Request::create('/invalid');
+        $route = new Route('GET', '/invalid', ['uses' => 'ExampleController@index']);
+        $route->controller = 123;
+        $request->setRouteResolver(static fn () => $route);
+        $this->expectException(\UnexpectedValueException::class);
+        (new RequestContextProvider($request))->getContext();
     }
 }
